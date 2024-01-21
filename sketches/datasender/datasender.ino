@@ -8,7 +8,7 @@ const char* pass = "thatiscool";
 const char* server = "174.93.52.42";
 // const char* server = "samuraimain.ddns.net";
 int port = 8080;
-int wet = 0;
+int wet = 200;
 int dry = 620;
 
 WiFiClient wifiClient;

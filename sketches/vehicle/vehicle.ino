@@ -1,5 +1,5 @@
 #include <Adafruit_MotorShield.h>
-//#include <hp_BH1750.h>
+// #include <hp_BH1750.h>
 
 #define MOTOR_A_TERMINAL 1
 #define MOTOR_B_TERMINAL 2
@@ -18,17 +18,30 @@ Adafruit_DCMotor *MOTOR_B = AFMS.getMotor(MOTOR_B_TERMINAL);
 Adafruit_DCMotor *MOTOR_C = AFMS.getMotor(MOTOR_C_TERMINAL);
 Adafruit_DCMotor *MOTOR_D = AFMS.getMotor(MOTOR_D_TERMINAL);
 
+const int sig1pin = 12;
+const int sig2pin = 13;
+const int readypin = 11;
+const int delaytime = 30000;
+const int mvtime = 10000;
+
 // int run;
 // int buttonPin;
-byte whichPlant;
+int whichPlant;
+int go1, go2;
 
-void setup() {
+void setup()
+{
   // run = 0; //starts stopped
   // buttonPin = A5; //whatever pin your button is plugged into
 
   // pinMode(buttonPin, INPUT_PULLUP);
   // // put your setup code here, to run once:
   AFMS.begin();
+
+  Serial.begin(9600);      // Initialize serial communication
+  pinMode(sig1pin, INPUT); // Set D12 as an input pin
+  pinMode(sig2pin, INPUT); // Set D13 as an input pin
+  pinMode(readypin, OUTPUT); // 
 
   // Serial.begin(9600);
 
@@ -50,7 +63,8 @@ void setup() {
   MOTOR_D->run(RELEASE);
 }
 
-void loop() {
+void loop()
+{
 
   // int SEN_1 = digitalRead(IR_PIN_1);
   // int SEN_2 = digitalRead(IR_PIN_2);
@@ -69,32 +83,72 @@ void loop() {
   //   stop();
   // }
 
-  whichPlant = 01;
+  int go1 = digitalRead(sig1pin);
+  int go2 = digitalRead(sig2pin);
 
-    switch (whichPlant) {
-    case 0b00: // 00 - Stop
-      stop();
-      delay(8000); // Pause for 8 seconds
-      break;
+  whichPlant = go1 + 2*go2;
+  Serial.println(whichPlant);
 
-    case 0b01: // 01 - Move forward for 5 seconds
-      moveForward();
-      delay(5000); // Move for 5 seconds
-      stop();
-      delay(8000); // Pause for 8 seconds
-      break;
+  switch (whichPlant)
+  {
+  case 0: // 00 - Stop
+    stop();
+    delay(delaytime); // Pause for 15 seconds
+    break;
 
-    case 0b10: // 10 - Move forward for 10 seconds
-      moveForward();
-      delay(10000); // Move for 10 seconds
-      stop();
-      delay(8000); // Pause for 8 seconds
-      break;
+  case 1: // 01 - Move forward for 5 seconds
+    moveForward();
+    delay(mvtime); // Move for 5 seconds
+    stop();
+
+    digitalWrite(readypin, HIGH);
+    delay(delaytime); // Pause for 15 seconds
+    digitalWrite(readypin, LOW);
+
+    moveBackward();
+    delay(mvtime);
+    stop();
+    break;
+
+  case 2: // 10 - Move forward for 10 seconds
+    moveForward();
+    delay(mvtime); // Move for 10 seconds
+    stop();
+
+    digitalWrite(readypin, HIGH);
+    delay(delaytime); // Pause for 15 seconds
+    digitalWrite(readypin, LOW);
+
+    moveBackward();
+    delay(2*mvtime);
+    stop();
+    break;
+  case 3:
+    moveForward();
+    delay(mvtime); // Move for 10 seconds
+    stop();
+
+    digitalWrite(readypin, HIGH);
+    delay(delaytime); // Pause for 15 seconds
+    digitalWrite(readypin, LOW);
+
+    moveForward();
+    delay(mvtime); // Move for 10 seconds
+    stop();
+
+    digitalWrite(readypin, HIGH);
+    delay(delaytime); // Pause for 15 seconds
+    digitalWrite(readypin, LOW);
+
+    moveBackward();
+    delay(2*mvtime);
+    stop();
+    break;
   }
 }
 
-
-void moveForward(){
+void moveForward()
+{
   MOTOR_A->setSpeed(45);
   MOTOR_A->run(FORWARD);
 
@@ -107,8 +161,22 @@ void moveForward(){
   MOTOR_D->setSpeed(45);
   MOTOR_D->run(FORWARD);
 }
+void moveBackward(){
+  MOTOR_A->setSpeed(45);
+  MOTOR_A->run(BACKWARD);
 
-void stop() {
+  MOTOR_B->setSpeed(45);
+  MOTOR_B->run(BACKWARD);
+
+  MOTOR_C->setSpeed(45);
+  MOTOR_C->run(BACKWARD);
+
+  MOTOR_D->setSpeed(45);
+  MOTOR_D->run(BACKWARD);
+}
+
+void stop()
+{
   MOTOR_A->setSpeed(0);
   MOTOR_B->setSpeed(0);
   MOTOR_C->setSpeed(0);
@@ -123,7 +191,6 @@ void stop() {
 // if signal 01 - stop at the first point
 // if signal 10 - stop at the second point
 // if signal 11 - go to both
-
 
 // void rotateMotorsClockwise() {
 //   MOTOR_A->setSpeed(30);
@@ -148,4 +215,3 @@ void stop() {
 //   MOTOR_A->run(FORWARD);
 //   MOTOR_D->run(FORWARD);
 // }
-
