@@ -6,6 +6,7 @@
 ```
 
 # HappyPlant - UTRA Hacks 2024
+
 ### HappyPlant continuously monitors your plant's soil moisture and light exposure levels and uses an AI model to make decisions on wether to water them automatically, or advise you to provide them with better conditions.
 
 ## Scalability
