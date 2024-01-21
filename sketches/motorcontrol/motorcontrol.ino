@@ -44,7 +44,7 @@ void setup()
 {
     Serial.begin(9600);
     Servo1.attach(motorPin);
-    Servo1.write(0);
+    Servo1.write(45);
 
     WiFi.begin(ssid, password);
     Serial.println("Connecting...");
@@ -119,9 +119,9 @@ void loop()
                         Serial.println("Waiting for ready signal...");
                     }
                     if(plantSelLSbit){
-                        Servo1.write(40);
+                        Servo1.write(180);
                         delay(pourTime1*750);
-                        Servo1.write(0);
+                        Servo1.write(45);
                         delay(1000);
                     }
                     if(plantSelMSbit){
@@ -130,9 +130,9 @@ void loop()
                         {
                             Serial.println("Waiting for ready signal...");
                         }
-                        Servo1.write(40);
+                        Servo1.write(180);
                         delay(pourTime2*750);
-                        Servo1.write(0);
+                        Servo1.write(45);
                     }
                 }
             }

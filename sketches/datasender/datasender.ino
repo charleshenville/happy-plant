@@ -1,9 +1,12 @@
 #include "WiFiS3.h"
 #include <hp_BH1750.h>
 #include <ArduinoHttpClient.h>
+#include <Servo.h>
 
 const char* ssid = "charleshen";
 const char* pass = "thatiscool";
+
+Servo Servo1;
 
 const char* server = "174.93.52.42";
 // const char* server = "samuraimain.ddns.net";
@@ -17,9 +20,15 @@ HttpClient client = HttpClient(wifiClient, server, port);
 hp_BH1750 luxSensor;
 int lux = 0;
 
+const int motorpin = 3;
+
 void setup() {
   Serial.begin(9600);
   delay(2000);
+
+  Servo1.attach(motorPin);
+  Servo1.write(40);
+
   bool avail = luxSensor.begin(BH1750_TO_GROUND);
   // Connect to WiFi
   while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
@@ -32,11 +41,17 @@ void setup() {
 
 void loop() {
   // Sample data to be sent
-  int moisture_level = analogRead(A1);
-  int moisture_level_2 = analogRead(A2);
-  int percentageHumididy = map(moisture_level, wet, dry, 100, 0);
-  int percentageHumididy_2 = map(moisture_level_2, wet, dry, 100, 0);
+  float moisture_level = analogRead(A1);
+  float moisture_level_2 = analogRead(A2);
+  float percentageHumididy = map(moisture_level, wet, dry, 100, 0);
+  float percentageHumididy_2 = map(moisture_level_2, wet, dry, 100, 0);
 
+  if(percentageHumididy < 30.0 || percentageHumididy_2 < 30.0){
+    Servo1.write(180);
+    float hm = percentageHumididy<percentageHumididy_2?percentageHumididy:percentageHumididy_2;
+    delay((int)((30.0-hm)*1000))
+    Servo1.write(40);
+  }
   luxSensor.start();
   float sunlight_level = luxSensor.getLux();
 
