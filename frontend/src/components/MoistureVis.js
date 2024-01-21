@@ -10,7 +10,7 @@ function MoistureVis() {
     const [ctime, setCtime] = useState("0");
 
     const fetchData = () => {
-        axios.get(`http://100.67.82.145:80/get_moisture`)
+        axios.get(`http://samuraimain.ddns.net:8080/get_moisture`)
             .then((response) => {
                 setSoilData(response.data); // Assuming the API returns a success flag
                 console.log(soilData)

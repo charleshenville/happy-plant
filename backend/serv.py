@@ -10,6 +10,23 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+moist_data=[]
+sun_data=[]
+cdt = 0
+
+def write_to_global_data(moist, sun):
+    global moist_data, sun_data, cdt
+
+    cdt = datetime.now()
+    sse = int(cdt.timestamp())
+
+    moist_data.append({"time": sse, "value": moist})
+    moist_data.append({"time": sse, "value": sun})
+
+    if len(moist_data) > 100:
+        moist_data.pop(0)
+    if len(sun_data) > 100:
+        sun_data.pop(0)
 
 @app.route("/", methods=['POST'])
 def display_message():
@@ -18,14 +35,13 @@ def display_message():
 
 @app.route("/get_moisture", methods=['GET'])
 def get_moisture():
+    global moist_data
+    return moist_data
 
-    data = []
-    for x in range(50):
-        current_time = datetime.now()
-        value = (int(current_time.timestamp()) % 50) + random.randint(-10, 10)
-        data.append({"time": x, "value": value})
-    
-    return data
+@app.route("/get_sunlight", methods=['GET'])
+def get_moisture():
+    global sun_data
+    return sun_data
 
 @app.route("/get_data", methods=['GET'])
 def get_data():
@@ -35,15 +51,8 @@ def get_data():
     print(received_data)
     received_data = received_data.split(" ") 
 
-    # Create a response dictionary with both the received and processed data
-    #response_data = {
-      #  "moist" : received_data[0], 
-     #   "sun": received_data[1]
-    #}
-    print(received_data)
-    return str(received_data)
-    #print(response_data)
-    #return str(response_data)
+    write_to_global_data(received_data[0], received_data[1])
+    return "pstd"
 """
 @app.route("/get ")
 @app.route("/get_sunlight", methods=['GET'])
