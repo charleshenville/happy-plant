@@ -116,14 +116,18 @@ function MoistureVis() {
         svg.append('path')
             //.data([data])
             .attr('d', line(soilData2))
-            .attr('stroke', 'blue')
+            .attr('stroke', 'darkblue')
             .attr('fill', 'none');
-    }, [chartRef, soilData, ctime]);
+    }, [chartRef, soilData, soilData2, ctime]);
 
 
     return (
         <div className={styles.moistcont}>
-            <div>Moisture</div>
+            <div style={{ display: 'flex', justifyContent: 'center', columnGap: '20px', fontWeight: 'bold' }}>
+                <div>Moisture</div>
+                <div style={{ height: '25px', width:'25px', backgroundColor:'blue', border:'solid black 1px', borderRadius:'2px', color:'white', fontSize:'medium' }}>A1</div>
+                <div style={{ height: '25px', width:'25px', backgroundColor:'darkblue', border:'solid black 1px', borderRadius:'2px', color:'white', fontSize:'medium' }}>A2</div>
+            </div>
             <div ref={chartRef} className={styles.msctn}>
 
             </div>

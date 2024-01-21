@@ -33,8 +33,18 @@ def write_to_global_data(moist, moist2, sun):
 
 def check_activation():
     global moist_data
-    if moist_data[len(moist_data)-1]<=30: return True
-    else: return False
+    total=0
+    seconds=0
+    seconds2=0
+
+    if moist_data[len(moist_data)-1]<=30: 
+        total+=1
+        seconds=30-moist_data[len(moist_data)-1]
+    if moist_data_2[len(moist_data)-1]<=30: 
+        total+=2
+        seconds=30-moist_data_2[len(moist_data_2)-1]
+
+    return str(total)+","+str(seconds)+","+str(seconds2)
 
 @app.route("/", methods=['POST'])
 def display_message():
@@ -65,7 +75,7 @@ def get_data():
 @app.route("/get_activation", methods=['GET'])
 def get_activation():
 
-    activate = 1 if check_activation() else 0;
+    activate = check_activation()
     return activate
 """
 @app.route("/post_water", methods=['POST'])

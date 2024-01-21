@@ -113,7 +113,7 @@ function SunlightVis() {
 
     return (
         <div className={styles.moistcont}>
-            <div>Sun Exposure</div>
+            <div style={{fontWeight: 'bold'}}>Sun Exposure</div>
             <div ref={chartRef} className={styles.msctn}>
 
             </div>
