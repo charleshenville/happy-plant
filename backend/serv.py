@@ -47,7 +47,7 @@ def check_activation():
         seconds=(30-lm)*2
     if lm2<=30: 
         total+=2
-        seconds=(30-lm2)*2
+        seconds2=(30-lm2)*2
 
     return str(total)+","+str(seconds)+","+str(seconds2)
 
