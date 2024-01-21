@@ -39,8 +39,8 @@ def check_activation():
     seconds=0
     seconds2=0
 
-    lm = moist_data[len(moist_data)-1]['value']
-    lm2 = moist_data_2[len(moist_data_2)-1]['value']
+    lm = float(moist_data[len(moist_data)-1]['value'])
+    lm2 = float(moist_data_2[len(moist_data_2)-1]['value'])
 
     if lm<=30.0: 
         total+=1
