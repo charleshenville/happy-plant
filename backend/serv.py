@@ -9,9 +9,11 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-moist_data=[]
-moist_data_2=[]
-sun_data=[]
+cdt = datetime.now()
+sse = int(cdt.timestamp())
+moist_data=[{"time": sse, "value": 0}]
+moist_data_2=[{"time": sse, "value": 0}]
+sun_data=[{"time": sse, "value": 0}]
 cdt = 0
 
 def write_to_global_data(moist, moist2, sun):
@@ -39,10 +41,10 @@ def check_activation():
 
     if moist_data[len(moist_data)-1]['value']<=30: 
         total+=1
-        seconds=30-moist_data[len(moist_data)-1]
-    if moist_data_2[len(moist_data)-1]['value']<=30: 
+        seconds=30-moist_data[len(moist_data)-1]['value']
+    if moist_data_2[len(moist_data_2)-1]['value']<=30: 
         total+=2
-        seconds=30-moist_data_2[len(moist_data_2)-1]
+        seconds=30-moist_data_2[len(moist_data_2)-1]['value']
 
     return str(total)+","+str(seconds)+","+str(seconds2)
 
