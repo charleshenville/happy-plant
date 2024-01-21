@@ -21,7 +21,7 @@ def write_to_global_data(moist, sun):
     sse = int(cdt.timestamp())
 
     moist_data.append({"time": sse, "value": moist})
-    moist_data.append({"time": sse, "value": sun})
+    sun_data.append({"time": sse, "value": sun})
 
     if len(moist_data) > 100:
         moist_data.pop(0)
@@ -39,7 +39,7 @@ def get_moisture():
     return moist_data
 
 @app.route("/get_sunlight", methods=['GET'])
-def get_moisture():
+def get_sunlight():
     global sun_data
     return sun_data
 
