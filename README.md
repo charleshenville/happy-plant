@@ -13,3 +13,4 @@
 ## Scalability
 - The HappyPlant framework may be scaled up to industrial-level agricultural setups; increasing crop yield and decreasing waste.
 - The framework will allow a given user to add as many plants to their setup as they wish.
+hithrihgue
