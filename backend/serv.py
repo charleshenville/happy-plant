@@ -39,12 +39,15 @@ def check_activation():
     seconds=0
     seconds2=0
 
-    if moist_data[len(moist_data)-1]['value']<=30: 
+    lm = int(moist_data[len(moist_data)-1]['value'])
+    lm2 = int(moist_data_2[len(moist_data_2)-1]['value'])
+
+    if lm<=30: 
         total+=1
-        seconds=30-moist_data[len(moist_data)-1]['value']
-    if moist_data_2[len(moist_data_2)-1]['value']<=30: 
+        seconds=(30-lm)*2
+    if lm2<=30: 
         total+=2
-        seconds=30-moist_data_2[len(moist_data_2)-1]['value']
+        seconds=(30-lm2)*2
 
     return str(total)+","+str(seconds)+","+str(seconds2)
 
