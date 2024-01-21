@@ -6,25 +6,28 @@ import time
 import random
 from flask_cors import CORS
 
-
 app = Flask(__name__)
 CORS(app)
 
 moist_data=[]
+moist_data_2=[]
 sun_data=[]
 cdt = 0
 
-def write_to_global_data(moist, sun):
-    global moist_data, sun_data, cdt
+def write_to_global_data(moist, moist2, sun):
+    global moist_data, moist_data_2, sun_data, cdt
 
     cdt = datetime.now()
     sse = int(cdt.timestamp())
 
     moist_data.append({"time": sse, "value": moist})
+    moist_data_2.append({"time": sse, "value": moist2})
     sun_data.append({"time": sse, "value": sun})
 
     if len(moist_data) > 100:
         moist_data.pop(0)
+    if len(moist_data_2) > 100:
+        moist_data_2.pop(0)
     if len(sun_data) > 100:
         sun_data.pop(0)
 
@@ -40,8 +43,8 @@ def display_message():
 
 @app.route("/get_moisture", methods=['GET'])
 def get_moisture():
-    global moist_data
-    return moist_data
+    global moist_data, moist_data_2
+    return [moist_data, moist_data_2]
 
 @app.route("/get_sunlight", methods=['GET'])
 def get_sunlight():
@@ -56,7 +59,7 @@ def get_data():
     print(received_data)
     received_data = received_data.split(" ") 
 
-    write_to_global_data(received_data[0], received_data[1])
+    write_to_global_data(received_data[0], received_data[1], received_data[2])
     return "pstd"
 
 @app.route("/get_activation", methods=['GET'])

@@ -2,14 +2,11 @@
 #include <hp_BH1750.h>
 #include <ArduinoHttpClient.h>
 
-// Replace with your WiFi credentials
 const char* ssid = "charleshen";
 const char* pass = "thatiscool";
 
-// Replace with your server details
 const char* server = "174.93.52.42";
 // const char* server = "samuraimain.ddns.net";
-
 int port = 8080;
 int wet = 0;
 int dry = 620;
@@ -36,17 +33,17 @@ void setup() {
 void loop() {
   // Sample data to be sent
   int moisture_level = analogRead(A1);
+  int moisture_level_2 = analogRead(A2);
   int percentageHumididy = map(moisture_level, wet, dry, 100, 0);
-  // int sunlight_level = analogRead(A1);
+  int percentageHumididy_2 = map(moisture_level_2, wet, dry, 100, 0);
 
-  //int moisture_level = 10;
   luxSensor.start();
   float sunlight_level = luxSensor.getLux();
 
-  // Create JSON payload
-  String queryString ="?query="+String(percentageHumididy) + "+" + String(sunlight_level);
+  // Creating payload
+  String queryString ="?query=" + String(percentageHumididy) + "+" + String(percentageHumididy_2) + "+" + String(sunlight_level);
 
-  // Make a POST request
+  // Make a GET request w query arg
   Serial.println(queryString);
   client.beginRequest();
   client.get("/get_data" + queryString); // Replace with your API endpoint

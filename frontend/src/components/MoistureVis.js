@@ -7,6 +7,7 @@ function MoistureVis() {
 
     const chartRef = useRef(null);
     const [soilData, setSoilData] = useState([]);
+    const [soilData2, setSoilData2] = useState([]);
     const [ctime, setCtime] = useState("0");
 
     const fetchData = () => {
@@ -15,17 +16,21 @@ function MoistureVis() {
                 const newData = response.data;
 
                 // Calculate the time difference with the first element
-                const firstTimestamp = new Date(newData[0].time * 1000);
+                const firstTimestamp = new Date(newData[0][0].time * 1000);
                 const timeDifference = firstTimestamp.getTime() / 1000; // in seconds
 
                 // Adjust the time values in newData
-                const filtered = newData.map(item => ({
+                const filtered = newData[0].map(item => ({
                     value: item.value,
                     time: item.time - timeDifference
                 }));
-                console.log(filtered)
+                const filtered2 = newData[1].map(item => ({
+                    value: item.value,
+                    time: item.time - timeDifference
+                }));
                 // Set the adjusted data to the state
                 setSoilData(filtered);
+                setSoilData2(filtered2);
                 // Set the first timestamp as Ctime
                 setCtime(firstTimestamp.toLocaleString());
             })
@@ -106,6 +111,11 @@ function MoistureVis() {
         svg.append('path')
             //.data([data])
             .attr('d', line(soilData))
+            .attr('stroke', 'blue')
+            .attr('fill', 'none');
+        svg.append('path')
+            //.data([data])
+            .attr('d', line(soilData2))
             .attr('stroke', 'blue')
             .attr('fill', 'none');
     }, [chartRef, soilData, ctime]);
