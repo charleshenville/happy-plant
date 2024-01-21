@@ -30,16 +30,20 @@ def get_moisture():
 @app.route("/get_data", methods=['GET'])
 def get_data():
 
-    received_data = request.args.get('query').split("+") 
+    received_data = request.args.get('query')
+    
+    print(received_data)
+    received_data = received_data.split(" ") 
 
     # Create a response dictionary with both the received and processed data
-    response_data = {
-        "moist" : received_data[0], 
-        "sun": received_data[1]
-    }
-
-    print(response_data)
-    return str(response_data)
+    #response_data = {
+      #  "moist" : received_data[0], 
+     #   "sun": received_data[1]
+    #}
+    print(received_data)
+    return str(received_data)
+    #print(response_data)
+    #return str(response_data)
 """
 @app.route("/get ")
 @app.route("/get_sunlight", methods=['GET'])
