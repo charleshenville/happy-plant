@@ -12,8 +12,22 @@ function MoistureVis() {
     const fetchData = () => {
         axios.get(`http://samuraimain.ddns.net:8080/get_moisture`)
             .then((response) => {
-                setSoilData(response.data); // Assuming the API returns a success flag
-                console.log(soilData)
+                const newData = response.data;
+
+                // Calculate the time difference with the first element
+                const firstTimestamp = new Date(newData[0].time * 1000);
+                const timeDifference = firstTimestamp.getTime() / 1000; // in seconds
+
+                // Adjust the time values in newData
+                const filtered = newData.map(item => ({
+                    value: item.value,
+                    time: item.time - timeDifference
+                }));
+                console.log(filtered)
+                // Set the adjusted data to the state
+                setSoilData(filtered);
+                // Set the first timestamp as Ctime
+                setCtime(firstTimestamp.toLocaleString());
             })
             .catch((error) => {
                 console.error(error);
@@ -26,7 +40,7 @@ function MoistureVis() {
 
         const intervalId = setInterval(() => {
             fetchData(); // API call every 10 seconds
-        }, 10000);
+        }, 2000);
 
         // Cleanup function to clear the interval on component unmount
         return () => clearInterval(intervalId);
@@ -47,9 +61,6 @@ function MoistureVis() {
         const marginBottom = 30;
         const marginLeft = 40;
 
-        // Sample data
-        const data = [{ time: 1, value: 0 }, { time: 2, value: 2 }, { time: 3, value: 5 }, { time: 4, value: 5 }, { time: 5, value: 7 }, { time: 6, value: 8 }, { time: 7, value: 12 }];
-
         // Set up the SVG container
         const svg = d3.select(chartRef.current)
             .append('svg')
@@ -60,8 +71,8 @@ function MoistureVis() {
             .attr('id', 'moist'); // Set the ID of the new SVG
 
 
-        const x = d3.scaleLinear([0, d3.max(soilData, d => d.time)], [marginLeft, width - marginRight]);
-        const y = d3.scaleLinear([d3.min(soilData, d => d.value)-10, d3.max(soilData, d => d.value)+10], [height - marginBottom, marginTop]);
+        const x = d3.scaleLinear([d3.min(soilData, d => d.time), d3.max(soilData, d => d.time)], [marginLeft, width - marginRight]);
+        const y = d3.scaleLinear([d3.min(soilData, d => d.value) - 10, 630], [height - marginBottom, marginTop]);
 
         const line = d3.line()
             .x(d => x(d.time))
@@ -71,11 +82,11 @@ function MoistureVis() {
             .attr("transform", `translate(0,${height - marginBottom})`)
             .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0))
             .call(g => g.append("text")
-                .attr("x", (width - marginRight) / 2)
+                .attr("x", (width - marginRight) / 2 - 50)
                 .attr("y", marginBottom)
                 .attr("fill", "currentColor")
                 .attr("text-anchor", "start")
-                .text("Minutes Since\n" + ctime));
+                .text("Seconds Since\n" + ctime));
 
         svg.append("g")
             .attr("transform", `translate(${marginLeft},0)`)
