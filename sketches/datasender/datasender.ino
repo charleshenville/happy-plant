@@ -1,4 +1,5 @@
 #include "WiFiS3.h"
+#include <hp_BH1750.h>
 #include <ArduinoHttpClient.h>
 
 // Replace with your WiFi credentials
@@ -10,14 +11,19 @@ const char* server = "174.93.52.42";
 // const char* server = "samuraimain.ddns.net";
 
 int port = 8080;
+int wet = 0;
+int dry = 620;
 
 WiFiClient wifiClient;
 HttpClient client = HttpClient(wifiClient, server, port);
 
+hp_BH1750 luxSensor;
+int lux = 0;
+
 void setup() {
   Serial.begin(9600);
   delay(2000);
-
+  bool avail = luxSensor.begin(BH1750_TO_GROUND);
   // Connect to WiFi
   while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
     Serial.println("Connecting to WiFi...");
@@ -29,18 +35,20 @@ void setup() {
 
 void loop() {
   // Sample data to be sent
-  int moisture_level = analogRead(A0);
+  int moisture_level = analogRead(A1);
+  int percentageHumididy = map(moisture_level, wet, dry, 100, 0);
   // int sunlight_level = analogRead(A1);
 
   //int moisture_level = 10;
-  int sunlight_level = 10;
+  luxSensor.start();
+  float sunlight_level = luxSensor.getLux();
 
   // Create JSON payload
-  String queryString ="?query="+String(moisture_level) + "+" + String(sunlight_level);
+  String queryString ="?query="+String(percentageHumididy) + "+" + String(sunlight_level);
 
   // Make a POST request
   Serial.println(queryString);
- client.beginRequest();
+  client.beginRequest();
   client.get("/get_data" + queryString); // Replace with your API endpoint
   // client.sendHeader("Host", server);
   // client.sendHeader("Connection", "close");

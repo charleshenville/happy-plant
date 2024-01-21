@@ -72,7 +72,7 @@ function MoistureVis() {
 
 
         const x = d3.scaleLinear([d3.min(soilData, d => d.time), d3.max(soilData, d => d.time)], [marginLeft, width - marginRight]);
-        const y = d3.scaleLinear([d3.min(soilData, d => d.value) - 10, 630], [height - marginBottom, marginTop]);
+        const y = d3.scaleLinear([0, 100], [height - marginBottom, marginTop]);
 
         const line = d3.line()
             .x(d => x(d.time))

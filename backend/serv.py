@@ -28,6 +28,11 @@ def write_to_global_data(moist, sun):
     if len(sun_data) > 100:
         sun_data.pop(0)
 
+def check_activation():
+    global moist_data
+    if moist_data[len(moist_data)-1]<=30: return True
+    else: return False
+
 @app.route("/", methods=['POST'])
 def display_message():
     data = request.data
@@ -53,13 +58,13 @@ def get_data():
 
     write_to_global_data(received_data[0], received_data[1])
     return "pstd"
-"""
-@app.route("/get ")
-@app.route("/get_sunlight", methods=['GET'])
-def get_sunlight():
-    data = request.data
-    return "Hello World!"
 
+@app.route("/get_activation", methods=['GET'])
+def get_activation():
+
+    activate = 1 if check_activation() else 0;
+    return activate
+"""
 @app.route("/post_water", methods=['POST'])
 def post_water():
     data = request.data
