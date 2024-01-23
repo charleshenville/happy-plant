@@ -10,8 +10,10 @@ CORS(app)
 
 log_path = "./log.csv"
 lw_time = 0
+ll_time = 0
 cdt = datetime.now()
 sse = int(cdt.timestamp())
+sample_interval = 60 # How often we look at arduino data
 max_points = 4096
 dry_threshold = 25.0
 write_interval = 1800  # How often data gets written to drive
@@ -125,18 +127,23 @@ def get_sunlight():
 @app.route("/get_data", methods=['GET'])
 def get_data():
 
+    global ll_time
+    cdt = datetime.now()
+    sse = int(cdt.timestamp())
+
     received_data = request.args.get('query')
 
     print(received_data)
     received_data = received_data.split(" ")
 
-    try:
-        write_to_global_data(
-            received_data[0], received_data[1], received_data[2], received_data[3])
-    except IndexError:
-        return "F"
-    return "T"
-
+    if sse-ll_time > sample_interval:
+        try:
+            write_to_global_data(received_data[0], received_data[1], received_data[2], received_data[3])
+        except IndexError:
+            return "NT"
+        return "WR"
+    else:
+        return "WT"
 
 @app.route("/get_activation", methods=['GET'])
 def get_activation():
