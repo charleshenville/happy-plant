@@ -136,8 +136,9 @@ def get_data():
     print(received_data)
     received_data = received_data.split(" ")
 
-    if sse-ll_time > sample_interval:
+    if sse-ll_time >= sample_interval:
         try:
+            ll_time = sse
             write_to_global_data(received_data[0], received_data[1], received_data[2], received_data[3])
         except IndexError:
             return "NT"
