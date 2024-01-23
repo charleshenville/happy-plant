@@ -44,7 +44,7 @@ except FileNotFoundError:
 
 
 def write_to_global_data(moist, moist2, moist3, sun):
-    global moist_data, moist_data_2, sun_data, cdt, max_points, lw_time
+    global moist_data, moist_data_2, moist_data_3, sun_data, cdt, max_points, lw_time
 
     cdt = datetime.now()
     sse = int(cdt.timestamp())
@@ -75,8 +75,8 @@ def write_to_global_data(moist, moist2, moist3, sun):
         moist_data.pop(0)
     if len(moist_data_2) > max_points:
         moist_data_2.pop(0)
-    if len(moist_data_2) > max_points:
-        moist_data_2.pop(0)
+    if len(moist_data_3) > max_points:
+        moist_data_3.pop(0)
     if len(sun_data) > max_points:
         sun_data.pop(0)
 
