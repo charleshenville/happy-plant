@@ -14,6 +14,7 @@ lw_time = 0
 ll_time = 0
 
 thresh_seconds = 3600 # Obliterate time deltas longer than this
+num_plants = 3
 
 cdt = datetime.now()
 sse = int(cdt.timestamp())
@@ -26,6 +27,8 @@ df = pd.DataFrame(columns=['time', 'moisture',
                   'moisture2', 'moisture3', 'sunlight'])
 df.loc[0] = [sse, 0.0, 0.0, 0.0, 0.0]
 
+moist_datas = []
+
 try:
     df = pd.read_csv(log_path, index_col=0)
     if df.empty:
@@ -36,84 +39,68 @@ try:
     if len(df) is not oldlen:
         df.to_csv(log_path, encoding='utf-8')
 
-    filtered_df = df[['time', 'moisture']]
-    moist_data = filtered_df.rename(columns={'moisture': 'value'}).to_dict(orient='records')
-
-    filtered_df = df[['time', 'moisture2']]
-    moist_data_2 = filtered_df.rename(columns={'moisture2': 'value'}).to_dict(orient='records')
-
-    filtered_df = df[['time', 'moisture3']]
-    moist_data_3 = filtered_df.rename(columns={'moisture3': 'value'}).to_dict(orient='records')
+    for i in range(num_plants):
+        strplc = i+1 if i is not 0 else ""
+        filtered_df = df[['time', 'moisture{s}'.format(s=strplc)]]
+        moist_datas.append(filtered_df.rename(columns={'moisture{s}'.format(s=strplc): 'value'}).to_dict(orient='records'))
 
     filtered_df = df[['time', 'sunlight']]
     sun_data = filtered_df.rename(columns={'sunlight': 'value'}).to_dict(orient='records')
+
 except FileNotFoundError:
-    moist_data = [{"time": sse, "value": 0}]
-    moist_data_2 = [{"time": sse, "value": 0}]
-    moist_data_3 = [{"time": sse, "value": 0}]
+
+    for i in range(num_plants):
+        moist_datas.append([{"time": sse, "value": 0}])
     sun_data = [{"time": sse, "value": 0}]
 
 
-def write_to_global_data(moist, moist2, moist3, sun):
-    global moist_data, moist_data_2, moist_data_3, sun_data, cdt, max_points, lw_time
+def write_to_global_data(mls, moist, moist2, moist3, sun):
+    global moist_datas, sun_data, cdt, max_points, lw_time
 
     cdt = datetime.now()
     sse = int(cdt.timestamp())
 
     new_idx = len(df)
-    df.loc[new_idx] = [sse, moist, moist2, moist3, sun]
+    df.loc[new_idx] = [sse] + mls + [sun]
+    
     if len(df) > max_points:
         df.drop(index=0)
 
     if (sse - lw_time) >= write_interval:
         lw_time = sse
         df.to_csv(log_path, encoding='utf-8')
-        filtered_df = df[['time', 'moisture']]
-        moist_data = filtered_df.rename(columns={'moisture': 'value'}).to_dict(orient='records')
-        filtered_df = df[['time', 'moisture2']]
-        moist_data_2 = filtered_df.rename(columns={'moisture2': 'value'}).to_dict(orient='records')
-        filtered_df = df[['time', 'moisture3']]
-        moist_data_3 = filtered_df.rename(columns={'moisture3': 'value'}).to_dict(orient='records')
+
+        for i in range(num_plants):
+            strplc = i+1 if i is not 0 else ""
+            filtered_df = df[['time', 'moisture{s}'.format(s=strplc)]]
+            moist_datas.append(filtered_df.rename(columns={'moisture{s}'.format(s=strplc): 'value'}).to_dict(orient='records'))
+
         filtered_df = df[['time', 'sunlight']]
         sun_data = filtered_df.rename(columns={'sunlight': 'value'}).to_dict(orient='records')
     else:
-        moist_data.append({"time": sse, "value": moist})
-        moist_data_2.append({"time": sse, "value": moist2})
-        moist_data_3.append({"time": sse, "value": moist3})
+        for i, ml in enumerate(mls):
+            moist_datas[i].append({"time": sse, "value": ml})
         sun_data.append({"time": sse, "value": sun})
 
-    if len(moist_data) > max_points:
-        moist_data.pop(0)
-    if len(moist_data_2) > max_points:
-        moist_data_2.pop(0)
-    if len(moist_data_3) > max_points:
-        moist_data_3.pop(0)
+    for i, moist_data in enumerate(moist_datas):
+        if len(moist_data) > max_points:
+            moist_datas[i].pop(0)
     if len(sun_data) > max_points:
         sun_data.pop(0)
 
-
 def check_activation():
-    global moist_data, moist_data_2, moist_data_3
+    global moist_datas
     total = 0
-    seconds = 0
-    seconds2 = 0
+    seconds = []
 
-    lm = float(moist_data[len(moist_data)-1]['value'])
-    lm2 = float(moist_data_2[len(moist_data_2)-1]['value'])
-    lm3 = float(moist_data_3[len(moist_data_3)-1]['value'])
+    lms = [float(moist_data[len(moist_data)-1]['value']) for moist_data in moist_datas]
 
-    if lm <dry_threshold: 
-        total += 1
-        seconds = dry_threshold-lm
-    if lm2 <dry_threshold: 
-        total += 2
-        seconds2 = dry_threshold-lm2
-    if lm3 <dry_threshold: 
-        total += 4
-        seconds3 = dry_threshold-lm3
+    for i, lm in enumerate(lms):
+        if lm <dry_threshold: 
+            total += 2**i
+            seconds.append(dry_threshold-lm)
 
-    return str(total)+","+str(seconds)+","+str(seconds2)+","+str(seconds3)
-
+    return str(total)+","+str(seconds).replace("[", "").replace("]", "")
 
 @app.route("/", methods=['POST'])
 def display_message():
@@ -123,8 +110,8 @@ def display_message():
 
 @app.route("/get_moisture", methods=['GET'])
 def get_moisture():
-    global moist_data, moist_data_2, moist_data_3
-    return [moist_data, moist_data_2, moist_data_3]
+    global moist_datas
+    return moist_datas
 
 
 @app.route("/get_sunlight", methods=['GET'])
@@ -160,7 +147,6 @@ def get_activation():
 
     activate = check_activation()
     return activate
-
 
 """
 @app.route("/post_water", methods=['POST'])
