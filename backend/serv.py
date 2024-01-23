@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import request
 from datetime import datetime
+import data_utils as du
 from flask_cors import CORS
 import numpy as np
 import pandas as pd
@@ -11,6 +12,9 @@ CORS(app)
 log_path = "./log.csv"
 lw_time = 0
 ll_time = 0
+
+thresh_seconds = 3600 # Obliterate time deltas longer than this
+
 cdt = datetime.now()
 sse = int(cdt.timestamp())
 sample_interval = 60 # How often we look at arduino data
@@ -27,6 +31,8 @@ try:
     if df.empty:
         raise FileNotFoundError()
 
+    du.obliterate_long_delta(df, thresh_seconds)
+    
     filtered_df = df[['time', 'moisture']]
     moist_data = filtered_df.rename(columns={'moisture': 'value'}).to_dict(orient='records')
 
