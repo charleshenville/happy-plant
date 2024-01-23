@@ -11,8 +11,9 @@ Servo Servo1;
 const char* server = "174.93.52.42";
 // const char* server = "samuraimain.ddns.net";
 int port = 8080;
-int wet = 200;
+int wet = 250;
 int dry = 650;
+double minsPerRequest = 0.1;
 
 WiFiClient wifiClient;
 HttpClient client = HttpClient(wifiClient, server, port);
@@ -48,28 +49,21 @@ void loop() {
   // Sample data to be sent
   int moisture_level = analogRead(A1);
   int moisture_level_2 = analogRead(A2);
+  int moisture_level_3 = analogRead(A3);
   double percentageHumidity = min(max(0.0, cmap(moisture_level, wet, dry, 100.0, 0.0)), 100.0);
   double percentageHumidity_2 = min(max(0.0, cmap(moisture_level_2, wet, dry, 100.0, 0.0)), 100.0);
+  double percentageHumidity_3 = min(max(0.0, cmap(moisture_level_3, wet, dry, 100.0, 0.0)), 100.0);
 
-  if(percentageHumidity < moistThresh || percentageHumidity_2 < moistThresh){
-    Servo1.write(180);
-    int hm = percentageHumidity<percentageHumidity_2?percentageHumidity:percentageHumidity_2;
-    int delaytime = (int)((moistThresh-hm)*400);
-    delay(delaytime);
-    Servo1.write(40);
-  }
   luxSensor.start();
   float sunlight_level = luxSensor.getLux();
 
   // Creating payload
-  String queryString ="?query=" + String(percentageHumidity) + "+" + String(percentageHumidity_2) + "+" + String(sunlight_level);
+  String queryString ="?query=" + String(percentageHumidity) + "+" + String(percentageHumidity_2) + "+" + String(percentageHumidity_3) + "+" + String(sunlight_level);
 
   // Make a GET request w query arg
   Serial.println(queryString);
   client.beginRequest();
-  client.get("/get_data" + queryString); // Replace with your API endpoint
-  // client.sendHeader("Host", server);
-  // client.sendHeader("Connection", "close");
+  client.get("/get_data" + queryString);
   client.endRequest();
 
   // Check the response
@@ -81,5 +75,5 @@ void loop() {
   Serial.print("Response: ");
   Serial.println(response);
 
-  delay(2000); // Send request every 10 seconds
+  delay(minsPerRequest*60000);
 }
