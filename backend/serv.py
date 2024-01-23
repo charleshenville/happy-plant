@@ -26,7 +26,7 @@ df = pd.DataFrame(
 try:
     df = pd.read_csv(log_path)
     filtered_df = df[['time', 'moisture']]
-    if filtered_df == None: raise(FileNotFoundError)
+    if filtered_df.empty(): raise(FileNotFoundError)
 
     # TODO: Change the moist_data instances here to a larger list of lists.
     moist_data = filtered_df.to_dict(orient='records')
