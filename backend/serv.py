@@ -54,9 +54,8 @@ def write_to_global_data(moist, moist2, moist3, sun):
     if len(df) > max_points:
         df.drop(index=0)
 
-    if(sse-df.iloc['time'].tolist()[new_idx-1] >= write_interval):
+    if (sse - df['time'].tolist()[new_idx-1] >= write_interval):
         df.to_csv(log_path, encoding='utf-8')
-
     
     moist_data.append({"time": sse, "value": moist})
     moist_data_2.append({"time": sse, "value": moist2})
