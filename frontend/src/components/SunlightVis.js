@@ -21,7 +21,7 @@ function SunlightVis() {
                 // Adjust the time values in newData
                 const filtered = newData.map(item => ({
                     value: item.value,
-                    time: item.time - timeDifference
+                    time: (item.time - timeDifference)/3600
                 }));
                 console.log(filtered)
                 // Set the adjusted data to the state
@@ -86,7 +86,7 @@ function SunlightVis() {
                 .attr("y", marginBottom)
                 .attr("fill", "currentColor")
                 .attr("text-anchor", "start")
-                .text("Seconds Since\n" + ctime));
+                .text("Hours Since\n" + ctime));
 
         svg.append("g")
             .attr("transform", `translate(${marginLeft},0)`)

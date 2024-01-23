@@ -23,15 +23,15 @@ function MoistureVis() {
                 // Adjust the time values in newData
                 const filtered = newData[0].map(item => ({
                     value: item.value,
-                    time: item.time - timeDifference
+                    time: (item.time - timeDifference)/3600
                 }));
                 const filtered2 = newData[1].map(item => ({
                     value: item.value,
-                    time: item.time - timeDifference
+                    time: (item.time - timeDifference)/3600
                 }));
                 const filtered3 = newData[2].map(item => ({
                     value: item.value,
-                    time: item.time - timeDifference
+                    time: (item.time - timeDifference)/3600
                 }));
                 // Set the adjusted data to the state
                 setSoilData(filtered);
@@ -97,7 +97,7 @@ function MoistureVis() {
                 .attr("y", marginBottom)
                 .attr("fill", "currentColor")
                 .attr("text-anchor", "start")
-                .text("Seconds Since\n" + ctime));
+                .text("Hours Since\n" + ctime));
 
         svg.append("g")
             .attr("transform", `translate(${marginLeft},0)`)
