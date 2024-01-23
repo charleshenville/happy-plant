@@ -31,8 +31,11 @@ try:
     if df.empty:
         raise FileNotFoundError()
 
-    du.obliterate_long_delta(df, thresh_seconds)
-    
+    oldlen = len(df)
+    df = du.obliterate_long_delta(df, thresh_seconds)
+    if len(df) is not oldlen:
+        df.to_csv(log_path, encoding='utf-8')
+
     filtered_df = df[['time', 'moisture']]
     moist_data = filtered_df.rename(columns={'moisture': 'value'}).to_dict(orient='records')
 
