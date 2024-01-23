@@ -50,8 +50,8 @@ function MoistureVis() {
         fetchData(); // Initial API call
 
         const intervalId = setInterval(() => {
-            fetchData(); // API call every 10 seconds
-        }, 2000);
+            fetchData(); 
+        }, 10000);
 
         // Cleanup function to clear the interval on component unmount
         return () => clearInterval(intervalId);
