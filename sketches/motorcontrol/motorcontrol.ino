@@ -34,7 +34,7 @@ unsigned long timerDelay = 5000;
 #define plantSelMSPin D1   // most significant
 #define plantSelLSPin D0   // least significant
 #define stillAtPlantPin D2 // 1 if currently stationed at a plant, 0 if not
-#define motorPin D3        //
+#define motorPin D3        // 
 
 // Function prototypes
 void splitStringToInts(String input, char delimiter, int &value1, int &value2, int &value3);

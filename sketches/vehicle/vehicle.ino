@@ -31,24 +31,12 @@ int go1, go2;
 
 void setup()
 {
-  // run = 0; //starts stopped
-  // buttonPin = A5; //whatever pin your button is plugged into
-
-  // pinMode(buttonPin, INPUT_PULLUP);
-  // // put your setup code here, to run once:
   AFMS.begin();
 
   Serial.begin(9600);      // Initialize serial communication
   pinMode(sig1pin, INPUT); // Set D12 as an input pin
   pinMode(sig2pin, INPUT); // Set D13 as an input pin
   pinMode(readypin, OUTPUT); // 
-
-  // Serial.begin(9600);
-
-  // pinMode(IR_PIN_1, INPUT);
-  // pinMode(IR_PIN_2, INPUT);
-  // pinMode(IR_PIN_3, INPUT);
-  // pinMode(IR_PIN_4, INPUT);
 
   MOTOR_A->setSpeed(0);
   MOTOR_A->run(RELEASE);
@@ -65,23 +53,6 @@ void setup()
 
 void loop()
 {
-
-  // int SEN_1 = digitalRead(IR_PIN_1);
-  // int SEN_2 = digitalRead(IR_PIN_2);
-  // int SEN_3 = digitalRead(IR_PIN_3);
-  // int SEN_4 = digitalRead(IR_PIN_4);
-
-  // //Serial.print(SEN_1);
-
-  // // Read the vale from the light sensor
-
-  // if (SEN_1 == 1 && SEN_2 == 0 && SEN_3 == 1 && SEN_4 == 0) {
-  //   moveForward();
-  // }
-
-  // if (SEN_1 == SEN_2 == SEN_3 == SEN_4){
-  //   stop();
-  // }
 
   int go1 = digitalRead(sig1pin);
   int go2 = digitalRead(sig2pin);
