@@ -15,7 +15,13 @@ max_points = 4096
 dry_threshold = 25.0
 write_interval = 1800 ## How often data gets written to drive
 
-df = pd.DataFrame()
+df = pd.DataFrame(
+    {'time': [0],
+        'moisture': [0],
+        'moisture2': [0],
+        'moisture3': [0],
+        'sunlight': [0]}
+)
 
 try:
     df = pd.read_csv(log_path)
