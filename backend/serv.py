@@ -35,7 +35,7 @@ try:
     moist_data_3 = filtered_df.rename(columns={'moisture3': 'value'}).to_dict(orient='records')
 
     filtered_df = df[['time', 'sunlight']]
-    sunlight_data = filtered_df.rename(columns={'sunlight': 'value'}).to_dict(orient='records')
+    sun_data = filtered_df.rename(columns={'sunlight': 'value'}).to_dict(orient='records')
 except FileNotFoundError:
     moist_data = [{"time": sse, "value": 0}]
     moist_data_2 = [{"time": sse, "value": 0}]
