@@ -126,7 +126,7 @@ function MoistureVis() {
             .attr('fill', 'none');
         svg.append('path')
             //.data([data])
-            .attr('d', line(soilData2))
+            .attr('d', line(soilData3))
             .attr('stroke', 'darkblue')
             .attr('fill', 'none');
     }, [chartRef, soilData, soilData2, soilData3, ctime]);
