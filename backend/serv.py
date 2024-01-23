@@ -9,24 +9,20 @@ app = Flask(__name__)
 CORS(app)
 
 log_path = "./log.csv"
+lw_time = 0
 cdt = datetime.now()
 sse = int(cdt.timestamp())
 max_points = 4096
 dry_threshold = 25.0
 write_interval = 1800 ## How often data gets written to drive
 
-df = pd.DataFrame(
-    {'time': [0],
-        'moisture': [0],
-        'moisture2': [0],
-        'moisture3': [0],
-        'sunlight': [0]}
-)
+df = pd.DataFrame(columns=['time', 'moisture', 'moisture2', 'moisture3', 'sunlight'])
+df.loc[0] = [sse, 0.0, 0.0, 0.0, 0.0]
 
 try:
-    df = pd.read_csv(log_path)
+    df = pd.read_csv(log_path, index_col=0)
     filtered_df = df[['time', 'moisture']]
-    if filtered_df.empty(): raise(FileNotFoundError)
+    if filtered_df.empty: raise FileNotFoundError()
 
     # TODO: Change the moist_data instances here to a larger list of lists.
     moist_data = filtered_df.to_dict(orient='records')
@@ -44,23 +40,32 @@ except FileNotFoundError:
     sun_data=[{"time": sse, "value": 0}]
 
 def write_to_global_data(moist, moist2, moist3, sun):
-    global moist_data, moist_data_2, sun_data, cdt, max_points
+    global moist_data, moist_data_2, sun_data, cdt, max_points, lw_time
 
     cdt = datetime.now()
     sse = int(cdt.timestamp())
 
     new_idx = len(df)
-    df.loc[new_idx] = [sse]+[moist]+[moist2]+[moist3]+[sun]
+    df.loc[new_idx] = [sse, moist, moist2, moist3, sun]
     if len(df) > max_points:
         df.drop(index=0)
 
-    if (sse - df['time'].tolist()[new_idx-1] >= write_interval):
+    if (sse - lw_time) >= write_interval:
+        lw_time = sse
         df.to_csv(log_path, encoding='utf-8')
-    
-    moist_data.append({"time": sse, "value": moist})
-    moist_data_2.append({"time": sse, "value": moist2})
-    moist_data_3.append({"time": sse, "value": moist3})
-    sun_data.append({"time": sse, "value": sun})
+	filtered_df = df[['time', 'moisture']]
+        moist_data = filtered_df.to_dict(orient='records')
+        filtered_df = df[['time', 'moisture2']]
+        moist_data_2 = filtered_df.to_dict(orient='records')
+        filtered_df = df[['time', 'moisture3']]
+        moist_data_3 = filtered_df.to_dict(orient='records')
+        filtered_df = df[['time', 'sunlight']]
+        sun_data = filtered_df.to_dict(orient='records')
+    else:
+        moist_data.append({"time": sse, "value": moist})
+        moist_data_2.append({"time": sse, "value": moist2})
+        moist_data_3.append({"time": sse, "value": moist3})
+        sun_data.append({"time": sse, "value": sun})
 
     if len(moist_data) > max_points:
         moist_data.pop(0)
