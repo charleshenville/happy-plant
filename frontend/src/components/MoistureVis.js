@@ -8,6 +8,7 @@ function MoistureVis() {
     const chartRef = useRef(null);
     const [soilData, setSoilData] = useState([]);
     const [soilData2, setSoilData2] = useState([]);
+    const [soilData3, setSoilData3] = useState([]);
     const [ctime, setCtime] = useState("0");
 
     const fetchData = () => {
@@ -28,9 +29,14 @@ function MoistureVis() {
                     value: item.value,
                     time: item.time - timeDifference
                 }));
+                const filtered3 = newData[2].map(item => ({
+                    value: item.value,
+                    time: item.time - timeDifference
+                }));
                 // Set the adjusted data to the state
                 setSoilData(filtered);
                 setSoilData2(filtered2);
+                setSoilData3(filtered3);
                 // Set the first timestamp as Ctime
                 setCtime(firstTimestamp.toLocaleString());
             })
@@ -111,6 +117,11 @@ function MoistureVis() {
         svg.append('path')
             //.data([data])
             .attr('d', line(soilData))
+            .attr('stroke', 'lightblue')
+            .attr('fill', 'none');
+        svg.append('path')
+            //.data([data])
+            .attr('d', line(soilData2))
             .attr('stroke', 'blue')
             .attr('fill', 'none');
         svg.append('path')
@@ -118,15 +129,16 @@ function MoistureVis() {
             .attr('d', line(soilData2))
             .attr('stroke', 'darkblue')
             .attr('fill', 'none');
-    }, [chartRef, soilData, soilData2, ctime]);
+    }, [chartRef, soilData, soilData2, soilData3, ctime]);
 
 
     return (
         <div className={styles.moistcont}>
             <div style={{ display: 'flex', justifyContent: 'center', columnGap: '20px', fontWeight: 'bold' }}>
                 <div>Moisture</div>
-                <div style={{ height: '25px', width:'25px', backgroundColor:'blue', border:'solid black 1px', borderRadius:'2px', color:'white', fontSize:'medium' }}>A1</div>
-                <div style={{ height: '25px', width:'25px', backgroundColor:'darkblue', border:'solid black 1px', borderRadius:'2px', color:'white', fontSize:'medium' }}>A2</div>
+                <div style={{ height: '25px', width:'25px', backgroundColor:'lightblue', border:'solid black 1px', borderRadius:'2px', color:'white', fontSize:'medium' }}>A1</div>
+                <div style={{ height: '25px', width:'25px', backgroundColor:'blue', border:'solid black 1px', borderRadius:'2px', color:'white', fontSize:'medium' }}>A2</div>
+                <div style={{ height: '25px', width:'25px', backgroundColor:'darkblue', border:'solid black 1px', borderRadius:'2px', color:'white', fontSize:'medium' }}>A3</div>
             </div>
             <div ref={chartRef} className={styles.msctn}>
 

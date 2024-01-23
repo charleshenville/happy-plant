@@ -100,8 +100,8 @@ def display_message():
 
 @app.route("/get_moisture", methods=['GET'])
 def get_moisture():
-    global moist_data, moist_data_2
-    return [moist_data, moist_data_2]
+    global moist_data, moist_data_2, moist_data_3
+    return [moist_data, moist_data_2, moist_data_3]
 
 @app.route("/get_sunlight", methods=['GET'])
 def get_sunlight():
