@@ -23,7 +23,7 @@ try:
         state.df.to_csv(state.log_path, encoding='utf-8')
 
     for i in range(state.num_plants):
-        strplc = i+1 if i is not 0 else ""
+        strplc = i+1 if i != 0 else ""
         filtered_df = state.df[['time', 'moisture{s}'.format(s=strplc)]]
         state.moist_datas.append(filtered_df.rename(columns={'moisture{s}'.format(s=strplc): 'value'}).to_dict(orient='records'))
 
@@ -58,7 +58,7 @@ def write_to_global_data(mls, sun):
         state.df.to_csv(state.log_path, encoding='utf-8')
 
         for i in range(state.num_plants):
-            strplc = i+1 if i is not 0 else ""
+            strplc = i+1 if i != 0 else ""
             filtered_df = state.df[['time', 'moisture{s}'.format(s=strplc)]]
             state.moist_datas.append(filtered_df.rename(columns={'moisture{s}'.format(s=strplc): 'value'}).to_dict(orient='records'))
 
