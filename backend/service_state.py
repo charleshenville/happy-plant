@@ -18,9 +18,9 @@ class sState:
         self.max_points = 4096
         self.dry_threshold = 25.0
         self.write_interval = 1800  # How often data gets written to drive
-
-        self.df = pd.DataFrame(columns=['time', 'moisture',
-                        'moisture2', 'moisture3', 'sunlight'])
+        
+        ms = ['moisture'] + ["moisture{}".format(str(i+2)) for i in range(self.num_plants-1)]
+        self.df = pd.DataFrame(columns=['time'] + ms + ['sunlight'])
         self.df.loc[0] = [self.sse, 0.0, 0.0, 0.0, 0.0]
 
         self.dict_list = []
