@@ -17,7 +17,7 @@ def obliterate_long_delta(df, maxdelta):
         if newdelta > longest_delta:
             longest_delta = newdelta
         if  newdelta>= maxdelta:
-            modded_df=df.drop(index=range(idx))
+            modded_df=df.drop(index=range(idx-1))
         last_time = time
 
     print("Longest Delta: {delta}".format(delta=longest_delta))
