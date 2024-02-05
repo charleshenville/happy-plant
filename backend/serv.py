@@ -43,12 +43,10 @@ def write_to_global_data(mls, sun):
     state.cdt = datetime.now()
     state.sse = int(state.cdt.timestamp())
 
-    new_idx = len(state.df)
     state.dict_list.append([state.sse] + mls + [sun])
     
-    if (state.sse - state.lw_time) >= state.write_interval:
+    if len(state.dict_list) >= state.smooth_interval:
         state.smooth()
-    #state.df.loc[new_idx] = [state.sse] + mls + [sun]
     
     if len(state.df) > state.max_points:
         state.df.drop(index=0)
@@ -57,17 +55,14 @@ def write_to_global_data(mls, sun):
         state.lw_time = state.sse
         state.df.to_csv(state.log_path, encoding='utf-8')
 
-        for i in range(state.num_plants):
-            strplc = i+1 if i != 0 else ""
-            filtered_df = state.df[['time', 'moisture{s}'.format(s=strplc)]]
-            state.moist_datas.append(filtered_df.rename(columns={'moisture{s}'.format(s=strplc): 'value'}).to_dict(orient='records'))
+    state.moist_datas = []
+    for i in range(state.num_plants):
+        strplc = i+1 if i != 0 else ""
+        filtered_df = state.df[['time', 'moisture{s}'.format(s=strplc)]]
+        state.moist_datas.append(filtered_df.rename(columns={'moisture{s}'.format(s=strplc): 'value'}).to_dict(orient='records'))
 
-        filtered_df = state.df[['time', 'sunlight']]
-        state.sun_data = filtered_df.rename(columns={'sunlight': 'value'}).to_dict(orient='records')
-    else:
-        for i, ml in enumerate(mls):
-            state.moist_datas[i].append({"time": state.sse, "value": ml})
-        state.sun_data.append({"time": state.sse, "value": sun})
+    filtered_df = state.df[['time', 'sunlight']]
+    state.sun_data = filtered_df.rename(columns={'sunlight': 'value'}).to_dict(orient='records')
 
     for i, moist_data in enumerate(state.moist_datas):
         if len(moist_data) > state.max_points:

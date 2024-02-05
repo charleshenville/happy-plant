@@ -10,6 +10,7 @@ class sState:
 
         self.thresh_seconds = 3600 # Obliterate time deltas longer than this
         self.num_plants = 3
+        self.smooth_interval = 5 # Num samples needed to smooth
 
         self.cdt = datetime.now()
         self.sse = int(self.cdt.timestamp())
@@ -32,6 +33,15 @@ class sState:
 
         cols = self.df.columns.tolist()
         print("CURRENT DICT: {s}".format(s=self.dict_list))
-        averages = [np.mean([float(l) for l in self.dict_list[i]]) for i in range(len(cols))]
-        self.df.iloc[len(self.df)] = averages
+
+        averages = []
+        for i in range(len(cols)):
+            to_avg = []
+            for j in range(self.smooth_interval):
+                to_avg.append(float(self.dict_list[j][i]))
+            averages.append(np.mean(to_avg))
+
+        print("CURRENT AVERAGES: {s}".format(s=averages))
+        self.df.loc[len(self.df)] = averages
+        print("CURRENT DF: {s}".format(s=self.df))
         self.dict_list = []
