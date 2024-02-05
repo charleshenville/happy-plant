@@ -32,7 +32,6 @@ class sState:
         if not self.dict_list or self.dict_list is None or self.dict_list == []: return
 
         cols = self.df.columns.tolist()
-        print("CURRENT DICT: {s}".format(s=self.dict_list))
 
         averages = []
         for i in range(len(cols)):
@@ -41,7 +40,5 @@ class sState:
                 to_avg.append(float(self.dict_list[j][i]))
             averages.append(np.mean(to_avg))
 
-        print("CURRENT AVERAGES: {s}".format(s=averages))
         self.df.loc[len(self.df)] = averages
-        print("CURRENT DF: {s}".format(s=self.df))
         self.dict_list = []
