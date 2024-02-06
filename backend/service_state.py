@@ -10,7 +10,7 @@ class sState:
 
         self.thresh_seconds = 3600 # Obliterate time deltas longer than this
         self.num_plants = 3
-        self.smooth_interval = 5 # Num samples needed to smooth
+        self.smooth_interval = 20 # Num samples needed to smooth
 
         self.cdt = datetime.now()
         self.sse = int(self.cdt.timestamp())
